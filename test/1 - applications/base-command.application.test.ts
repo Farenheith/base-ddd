@@ -3,7 +3,6 @@ import { BaseCommandApplicationBase, BaseCommandBodylessApplication, BaseCommand
 import { IRequestBodyless } from "../../src/interfaces/2 - domain/models/request.interface";
 import { INotificationService } from "../../src/interfaces/2 - domain/services/notification-service.interface";
 import * as https from "../../src/implementation/helpers/request-formatter";
-import { EXPECTATION_FAILED } from "http-status-codes";
 import { RequestInfoService } from "../../src/implementation/2 - domain/services/request-info.service";
 import { IBaseService } from "../../src/interfaces/2 - domain/services/base-service.interface";
 
