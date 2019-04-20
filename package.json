@@ -32,10 +32,11 @@
       ".ts",
       ".tsx"
     ],
+    "include": [
+      "src"
+    ],
     "exclude": [
-      "**/*.d.ts",
-      "build",
-      "test"
+      "src/interfaces"
     ],
     "reporter": [
       "html",
