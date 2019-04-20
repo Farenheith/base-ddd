@@ -7,10 +7,12 @@ import { INotificationService } from "./interfaces/2 - domain/services/notificat
 import { LanguageService } from "./implementation/2 - domain/services/language.service";
 import { NotificationService } from "./implementation/2 - domain/services/notification.service";
 import { ISettings } from "./interfaces/2 - domain/models/settings.interface";
+import { IScopedCache } from "./interfaces/2 - domain/services/scoped-cache.interface";
+import { ScopedCacheService } from "./implementation/2 - domain/services/scoped-cache.service";
 
-export abstract class AppContainer<TSettings extends ISettings> extends Container {
+export abstract class BaseAppContainer<TSettings extends ISettings> extends Container {
 
-    constructor(readonly requestInfoType: typeof RequestInfoService = RequestInfoService,
+    constructor(readonly requestInfoType: typeof RequestInfoService,
             readonly settings: TSettings) {
         super({ defaultScope: BindingScopeEnum.Request });
         this.register();
@@ -25,12 +27,13 @@ export abstract class AppContainer<TSettings extends ISettings> extends Containe
 
     registerDomain() {
         //models
-        this.bind<TSettings>(BASE_TYPES.domain.models.ISettings).toConstantValue(this.settings);
-        this.bind<IRequestInfo>(BASE_TYPES.domain.models.IRequestInfo).to(this.requestInfoType);
+        this.bind<TSettings>(BASE_TYPES.domainModels.ISettings).toConstantValue(this.settings);
+        this.bind<IRequestInfo>(BASE_TYPES.domainModels.IRequestInfo).to(this.requestInfoType);
 
         //services
-        this.bind<ILanguageService>(BASE_TYPES.domain.services.ILanguageService).to(LanguageService);
-        this.bind<INotificationService>(BASE_TYPES.domain.services.INotificationService).to(NotificationService);
+        this.bind<ILanguageService>(BASE_TYPES.domainServices.ILanguageService).to(LanguageService);
+        this.bind<INotificationService>(BASE_TYPES.domainServices.INotificationService).to(NotificationService);
+        this.bind<IScopedCache>(BASE_TYPES.domainServices.IScopedCacheService).to(ScopedCacheService);
     }
 
     abstract registerDomainServices(): void;

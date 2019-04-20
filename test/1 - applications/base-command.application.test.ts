@@ -1,4 +1,5 @@
 import "jasmine";
+import "reflect-metadata";
 import { BaseCommandApplicationBase, BaseCommandBodylessApplication, BaseCommandApplication } from "../../src/implementation/1 - application/base-command.application";
 import { IRequestBodyless } from "../../src/interfaces/2 - domain/models/request.interface";
 import { INotificationService } from "../../src/interfaces/2 - domain/services/notification-service.interface";

@@ -32,17 +32,22 @@
       ".ts",
       ".tsx"
     ],
-    "include": [
-      "src"
-    ],
     "exclude": [
-      "src/interfaces"
+      "src/interfaces",
+      "src/index.ts",
+      "coverage",
+      "test",
+      "build"
     ],
     "reporter": [
       "html",
       "text"
     ],
-    "all": true
+    "all": true,
+    "check-coverage": true,
+    "lines": 100,
+    "branches": 100,
+    "functions": 100
   },
   "repository": {
     "type": "git",

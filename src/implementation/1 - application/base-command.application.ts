@@ -7,7 +7,9 @@ import { IRequestInfo } from "../../interfaces/2 - domain/models/request-info.in
 import { RequestInfoService } from "../2 - domain/services/request-info.service";
 import { IResponse } from "../../interfaces/2 - domain/models/response.interface";
 import { badRequest, ok } from "../helpers/request-formatter";
+import { injectable } from "inversify";
 
+@injectable()
 export abstract class BaseCommandApplicationBase<TResult> {
     constructor(readonly notifications: INotificationService,
         readonly requestInfo: IRequestInfo) { }
