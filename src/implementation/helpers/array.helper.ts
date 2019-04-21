@@ -1,6 +1,6 @@
 export const ArrayHelper = {
   async forEachAsync<T>(array: T[],
-      callback: (item: T, index: number, array: T[]) => PromiseLike<void | true>) {
+      callback: (item: T, index: number, array: T[]) => PromiseLike<void | boolean>) {
     for (let index = 0; index < array.length; index++) {
       const result = await callback(array[index], index, array);
       if (result == true) {
