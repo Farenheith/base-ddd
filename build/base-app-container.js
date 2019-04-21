@@ -2,11 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
 const base_types_1 = require("./base-types");
-const request_info_service_1 = require("./implementation/2 - domain/services/request-info.service");
 const language_service_1 = require("./implementation/2 - domain/services/language.service");
 const notification_service_1 = require("./implementation/2 - domain/services/notification.service");
-class AppContainer extends inversify_1.Container {
-    constructor(requestInfoType = request_info_service_1.RequestInfoService, settings) {
+const scoped_cache_service_1 = require("./implementation/2 - domain/services/scoped-cache.service");
+const request_formatter_1 = require("./implementation/helpers/request-formatter");
+class BaseAppContainer extends inversify_1.Container {
+    constructor(requestInfoType, settings) {
         super({ defaultScope: inversify_1.BindingScopeEnum.Request });
         this.requestInfoType = requestInfoType;
         this.settings = settings;
@@ -19,11 +20,35 @@ class AppContainer extends inversify_1.Container {
     }
     registerDomain() {
         //models
-        this.bind(base_types_1.BASE_TYPES.domain.models.ISettings).toConstantValue(this.settings);
-        this.bind(base_types_1.BASE_TYPES.domain.models.IRequestInfo).to(this.requestInfoType);
+        this.bind(base_types_1.BASE_TYPES.domainModels.ISettings).toConstantValue(this.settings);
+        this.bind(base_types_1.BASE_TYPES.domainModels.IRequestInfo).to(this.requestInfoType);
         //services
-        this.bind(base_types_1.BASE_TYPES.domain.services.ILanguageService).to(language_service_1.LanguageService);
-        this.bind(base_types_1.BASE_TYPES.domain.services.INotificationService).to(notification_service_1.NotificationService);
+        this.bind(base_types_1.BASE_TYPES.domainServices.ILanguageService).to(language_service_1.LanguageService);
+        this.bind(base_types_1.BASE_TYPES.domainServices.INotificationService).to(notification_service_1.NotificationService);
+        this.bind(base_types_1.BASE_TYPES.domainServices.IScopedCacheService).to(scoped_cache_service_1.ScopedCacheService);
+    }
+    async adapter(symbol, req, res) {
+        const child = this.createChild();
+        const application = child.get(symbol);
+        const logger = child.get(base_types_1.BASE_TYPES.domainServices.ILogger);
+        try {
+            const x = await application.do(req);
+            //if redirection
+            if (x.statusCode >= 300 && x.statusCode <= 399) {
+                res.redirect(x.statusCode, x.data);
+            }
+            else {
+                res.status(x.statusCode);
+                res.send(x);
+            }
+            logger.info(`${req.path} ack ${x.statusCode}`);
+        }
+        catch (error) {
+            logger.error(`${req.path} err ${error.stack}`);
+            const result = request_formatter_1.serviceUnavailable();
+            res.status(result.statusCode);
+            res.send(result);
+        }
     }
 }
-exports.AppContainer = AppContainer;
+exports.BaseAppContainer = BaseAppContainer;

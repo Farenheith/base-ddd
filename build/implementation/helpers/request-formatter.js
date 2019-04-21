@@ -13,7 +13,12 @@ function badRequest(errors) {
     return { statusCode: http_status_codes_1.BAD_REQUEST, errors };
 }
 exports.badRequest = badRequest;
-function internalServerError(errors) {
-    return { statusCode: http_status_codes_1.INTERNAL_SERVER_ERROR, errors };
+function serviceUnavailable() {
+    return { statusCode: http_status_codes_1.SERVICE_UNAVAILABLE, errors: [
+            {
+                code: "unexpectedError",
+                message: "Tente novamente mais tarde"
+            }
+        ] };
 }
-exports.internalServerError = internalServerError;
+exports.serviceUnavailable = serviceUnavailable;

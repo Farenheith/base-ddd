@@ -3,16 +3,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cache = {};
 exports.Static = {
     get(key, getter) {
-        const result = cache[key];
+        let result = cache[key];
         if (result == undefined) {
-            cache[key] = getter();
+            cache[key] = result = getter();
         }
         return result;
     },
     async getAsync(key, getter) {
-        const result = cache[key];
+        let result = cache[key];
         if (result == undefined) {
-            cache[key] = await getter();
+            cache[key] = result = await getter();
         }
         return result;
     }
