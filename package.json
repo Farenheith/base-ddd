@@ -25,7 +25,8 @@
   },
   "scripts": {
     "test": "nyc npm run testNoCoverage",
-    "testNoCoverage": "jasmine-ts --config=jasmine.json"
+    "testNoCoverage": "jasmine-ts --config=jasmine.json",
+    "build": "tsc -d"
   },
   "nyc": {
     "extension": [
