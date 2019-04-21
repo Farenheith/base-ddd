@@ -42,6 +42,9 @@ let BaseService = class BaseService {
     hasNotification() {
         return this.notifications.hasNotification();
     }
+    joi() {
+        return joi;
+    }
 };
 BaseService = __decorate([
     inversify_1.injectable(),

@@ -17,6 +17,7 @@ export declare abstract class BaseService<TData, TResponse> implements IBaseServ
     }): boolean;
     message(message: string, code: string, field: keyof TResponse): void;
     hasNotification(): boolean;
+    joi(): typeof joi;
     abstract getJoi(): {
         [key in keyof TData]: joi.Schema;
     };

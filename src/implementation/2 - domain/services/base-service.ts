@@ -48,5 +48,9 @@ export abstract class BaseService<TData, TResponse> implements IBaseService<TDat
         return this.notifications.hasNotification();
     }
 
+    joi() {
+        return joi;
+    }
+
     abstract getJoi(): { [key in keyof TData]: joi.Schema  };
 }
