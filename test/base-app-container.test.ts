@@ -6,6 +6,9 @@ import { RequestInfoService } from "../src/implementation/2 - domain/services/re
 import { NotificationService } from "../src/implementation/2 - domain/services/notification.service";
 import { ScopedCacheService } from "../src/implementation/2 - domain/services/scoped-cache.service";
 import { LanguageService } from "../src/implementation/2 - domain/services/language.service";
+import { Container } from "inversify";
+import { ICommandBodyless } from "../src/interfaces/1 - application/command-interface";
+import { ILogger } from "../src/interfaces/2 - domain/services/logger.interface";
 
 class TestContainer extends BaseAppContainer<any> {
     registerDomainServices(): void {
@@ -49,5 +52,141 @@ describe("BaseAppContainer", () => {
         expect(mapping[BASE_TYPES.domainServices.ILanguageService.toString()]).toBe(LanguageService);
         expect(mapping[BASE_TYPES.domainServices.INotificationService.toString()]).toBe(NotificationService);
         expect(mapping[BASE_TYPES.domainServices.IScopedCacheService.toString()]).toBe(ScopedCacheService);
-    })
-})
+    });
+
+    it("adapter: redirect", async () => {
+        //Arrange
+        spyOn(TestContainer.prototype, "register");
+        const target = new TestContainer({} as any, {} as any);
+        const symbol = Symbol.for("teste");
+        const spyApplication = jasmine.createSpyObj<ICommandBodyless<any>>("application", {
+            do: Promise.resolve({
+                statusCode: 300,
+                data: "EXPECTED_RESULT"
+            })
+        });
+        const spyLogger = jasmine.createSpyObj<ILogger>("logger", {
+            info: undefined
+        });
+        const spyResponse = jasmine.createSpyObj("respoonse", {
+            redirect: undefined
+        });
+        const spyChild: any = {
+            get(x: any) { }
+        };
+        spyOn(spyChild, "get").and.callFake((x: any): any => {
+            if (x == symbol) {
+                return spyApplication;
+            } else {
+                return spyLogger;
+            }
+        });
+        spyOn(target, "createChild").and.returnValue(spyChild);
+
+        //Act
+        await target.adapter(symbol, "REQUEST" as any, spyResponse);
+
+        //Expect
+        expect(spyLogger.info).toHaveBeenCalledTimes(1);
+        expect(target.createChild).toHaveBeenCalledTimes(1);
+        expect(spyChild.get).toHaveBeenCalledWith(BASE_TYPES.domainServices.ILogger);
+        expect(spyChild.get).toHaveBeenCalledWith(symbol);
+        expect(spyApplication.do).toHaveBeenCalledWith("REQUEST");
+        expect(spyResponse.redirect).toHaveBeenCalledWith(300, "EXPECTED_RESULT");
+    });
+
+    it("adapter: ok", async () => {
+        //Arrange
+        spyOn(TestContainer.prototype, "register");
+        const target = new TestContainer({} as any, {} as any);
+        const symbol = Symbol.for("teste");
+        const spyApplication = jasmine.createSpyObj<ICommandBodyless<any>>("application", {
+            do: Promise.resolve({
+                statusCode: 202,
+                data: "EXPECTED_RESULT"
+            })
+        });
+        const spyLogger = jasmine.createSpyObj<ILogger>("logger", {
+            info: undefined
+        });
+        const spyResponse = jasmine.createSpyObj("respoonse", {
+            status: undefined,
+            send: undefined
+        });
+        const spyChild: any = {
+            get(x: any) { }
+        };
+        spyOn(spyChild, "get").and.callFake((x: any): any => {
+            if (x == symbol) {
+                return spyApplication;
+            } else {
+                return spyLogger;
+            }
+        });
+        spyOn(target, "createChild").and.returnValue(spyChild);
+
+        //Act
+        await target.adapter(symbol, "REQUEST" as any, spyResponse);
+
+        //Assert
+        expect(spyLogger.info).toHaveBeenCalledTimes(1);
+        expect(target.createChild).toHaveBeenCalledTimes(1);
+        expect(spyChild.get).toHaveBeenCalledWith(BASE_TYPES.domainServices.ILogger);
+        expect(spyChild.get).toHaveBeenCalledWith(symbol);
+        expect(spyApplication.do).toHaveBeenCalledWith("REQUEST");
+        expect(spyResponse.status).toHaveBeenCalledWith(202);
+        expect(spyResponse.send).toHaveBeenCalledWith({
+            statusCode: 202,
+            data: "EXPECTED_RESULT"
+        });
+    });
+
+    it("adapter: error", async () => {
+        //Arrange
+        spyOn(TestContainer.prototype, "register");
+        const target = new TestContainer({} as any, {} as any);
+        const symbol = Symbol.for("teste");
+        const spyApplication = {
+            do() { }
+        };
+        spyOn(spyApplication, "do").and.throwError("ERROR");
+        const spyLogger = jasmine.createSpyObj<ILogger>("logger", {
+            error: undefined
+        });
+        const spyResponse = jasmine.createSpyObj("respoonse", {
+            status: undefined,
+            send: undefined
+        });
+        const spyChild: any = {
+            get(x: any) { }
+        };
+        spyOn(spyChild, "get").and.callFake((x: any): any => {
+            if (x == symbol) {
+                return spyApplication;
+            } else {
+                return spyLogger;
+            }
+        });
+        spyOn(target, "createChild").and.returnValue(spyChild);
+
+        //Act
+        await target.adapter(symbol, "REQUEST" as any, spyResponse);
+
+        //Assert
+        expect(spyLogger.error).toHaveBeenCalledTimes(1);
+        expect(target.createChild).toHaveBeenCalledTimes(1);
+        expect(spyChild.get).toHaveBeenCalledWith(BASE_TYPES.domainServices.ILogger);
+        expect(spyChild.get).toHaveBeenCalledWith(symbol);
+        expect(spyApplication.do).toHaveBeenCalledWith("REQUEST");
+        expect(spyResponse.status).toHaveBeenCalledWith(503);
+        expect(spyResponse.send).toHaveBeenCalledWith({
+            statusCode: 503,
+            errors: [
+                {
+                    code: "unexpectedError",
+                    message: "Tente novamente mais tarde"
+                }
+            ]
+        });
+    });
+});

@@ -7,5 +7,6 @@ export const BASE_TYPES = {
         ILanguageService: Symbol.for("ILanguageService"),
         IScopedCacheService: Symbol.for("IScopedCacheService"),
         INotificationService: Symbol.for("INotificationService"),
+        ILogger: Symbol.for("ILogger")
     }
 }

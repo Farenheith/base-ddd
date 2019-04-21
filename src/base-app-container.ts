@@ -9,6 +9,11 @@ import { NotificationService } from "./implementation/2 - domain/services/notifi
 import { ISettings } from "./interfaces/2 - domain/models/settings.interface";
 import { IScopedCache } from "./interfaces/2 - domain/services/scoped-cache.interface";
 import { ScopedCacheService } from "./implementation/2 - domain/services/scoped-cache.service";
+import { IRequestBodyless } from "./interfaces/2 - domain/models/request.interface";
+import { ICommandBodyless } from "./interfaces/1 - application/command-interface";
+import { IResponse } from "./interfaces/2 - domain/models/response.interface";
+import { ILogger } from "./interfaces/2 - domain/services/logger.interface";
+import { serviceUnavailable } from "./implementation/helpers/request-formatter";
 
 export abstract class BaseAppContainer<TSettings extends ISettings> extends Container {
 
@@ -39,4 +44,28 @@ export abstract class BaseAppContainer<TSettings extends ISettings> extends Cont
     abstract registerDomainServices(): void;
 
     abstract registerApplications(): void;
+
+    async adapter(
+            symbol: symbol, req: IRequestBodyless, res: any) {
+        const child = this.createChild();
+        const application = child.get(symbol) as ICommandBodyless<any>;
+        const logger = child.get<ILogger>(BASE_TYPES.domainServices.ILogger);
+
+        try {
+            const x = await application.do(req);
+            //if redirection
+            if (x.statusCode >= 300 && x.statusCode <= 399) {
+                res.redirect(x.statusCode, x.data);
+            } else {
+                res.status(x.statusCode);
+                res.send(x);
+            }
+            logger.info(`${req.path} ack ${x.statusCode}`);
+        } catch (error) {
+            logger.error(`${req.path} err ${error.stack}`);
+            const result = serviceUnavailable();
+            res.status(result.statusCode);
+            res.send(result);
+        }
+    }
 }
