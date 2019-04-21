@@ -12,3 +12,4 @@ __export(require("./implementation/2 - domain/services/request-info.service"));
 __export(require("./implementation/2 - domain/services/scoped-cache.service"));
 __export(require("./implementation/2 - domain/services/static-service"));
 __export(require("./implementation/helpers/request-formatter"));
+__export(require("./implementation/helpers/array.helper"));

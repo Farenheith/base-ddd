@@ -14,3 +14,4 @@ export * from "./interfaces/2 - domain/services/language-service.interface";
 export * from "./interfaces/2 - domain/services/notification-service.interface";
 export * from "./interfaces/2 - domain/services/scoped-cache.interface";
 export * from "./implementation/helpers/request-formatter";
+export * from "./implementation/helpers/array.helper";
