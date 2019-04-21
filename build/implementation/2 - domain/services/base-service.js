@@ -26,13 +26,15 @@ let BaseService = class BaseService {
         return Promise.resolve(null);
     }
     validate(value, schema) {
-        const validation = joi.validate(value, schema, {
-            language: this.settings.language
-        });
-        if (validation.error) {
-            validation.error.details.forEach(detail => {
-                this.message(detail.message, detail.type, detail.context.key);
+        if (schema) {
+            const validation = joi.validate(value, schema, {
+                language: this.settings.language
             });
+            if (validation.error) {
+                validation.error.details.forEach(detail => {
+                    this.message(detail.message, detail.type, detail.context.key);
+                });
+            }
         }
         return this.hasNotification();
     }

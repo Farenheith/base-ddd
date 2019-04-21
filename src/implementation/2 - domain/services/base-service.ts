@@ -24,7 +24,7 @@ export abstract class BaseService<TData, TResponse> implements IBaseService<TDat
         return Promise.resolve(null);
     }
 
-    abstract proceed(data: TData): PromiseLike<TResponse>;
+    abstract proceed(data: TData): PromiseLike<TResponse | null>;
 
     validate(value: TData, schema: { [key in keyof TData]: joi.Schema  }): boolean {
         if (schema) {
