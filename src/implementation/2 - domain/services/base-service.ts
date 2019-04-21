@@ -40,8 +40,8 @@ export abstract class BaseService<TData, TResponse> implements IBaseService<TDat
         return this.hasNotification();
     }
 
-    message(message: string, code: string, field: keyof TResponse) {
-        this.notifications.add(message, code, field as string);
+    message(message: string, code: string, field?: keyof TResponse) {
+        this.notifications.add(message, code, field as string | undefined);
     }
 
     hasNotification() {
