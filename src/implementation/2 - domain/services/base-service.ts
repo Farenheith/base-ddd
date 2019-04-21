@@ -27,14 +27,16 @@ export abstract class BaseService<TData, TResponse> implements IBaseService<TDat
     abstract proceed(data: TData): PromiseLike<TResponse>;
 
     validate(value: TData, schema: { [key in keyof TData]: joi.Schema  }): boolean {
-        const validation = joi.validate(value, schema, {
-            language: this.settings.language
-        });
-
-        if (validation.error) {
-            validation.error.details.forEach(detail => {
-                this.message(detail.message, detail.type, detail.context!.key as any);
+        if (schema) {
+            const validation = joi.validate(value, schema, {
+                language: this.settings.language
             });
+
+            if (validation.error) {
+                validation.error.details.forEach(detail => {
+                    this.message(detail.message, detail.type, detail.context!.key as any);
+                });
+            }
         }
 
         return this.hasNotification();
