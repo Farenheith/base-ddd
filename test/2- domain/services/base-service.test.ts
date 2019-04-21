@@ -121,4 +121,15 @@ describe("BaseService", () => {
         expect(target.message).toHaveBeenCalledWith("TESTE TESTE", "teste", "field");
         expect(target.message).toHaveBeenCalledWith("SEGUNDO ERRO", "teste2", "field2");
     });
+
+    it("joi: ok", () => {
+        //Arrange
+        spyOn(Static, "get").and.returnValue("JOI");
+        const target = new Service("TESTE", {} as any, {} as any);
+
+        //Act
+        const result = target.joi();
+
+        expect(result.allow).toBe(joi.allow);
+    });
 });
