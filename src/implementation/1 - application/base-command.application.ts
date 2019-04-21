@@ -17,7 +17,7 @@ export abstract class BaseCommandApplicationBase<TResult> {
     do(req: IRequestBodyless): PromiseLike<IResponse<TResult>> {
         this.prepareRequestInfo(req);
 
-        return this.procceed(req).then(x => {
+        return this.proceed(req).then(x => {
             if (this.notifications.hasNotification()) {
                 return badRequest(this.notifications.getNotifications());
             } else {
@@ -36,7 +36,7 @@ export abstract class BaseCommandApplicationBase<TResult> {
         }
     }
 
-    abstract procceed(req: IRequestBodyless): PromiseLike<TResult | null>;
+    abstract proceed(req: IRequestBodyless): PromiseLike<TResult | null>;
 }
 
 export abstract class BaseCommandBodylessApplication<TQueryString, TResult>
@@ -48,7 +48,7 @@ export abstract class BaseCommandBodylessApplication<TQueryString, TResult>
         super(notifications, requestInfo);
     }
 
-    procceed(req: IRequestBodyless): PromiseLike<TResult | null> {
+    proceed(req: IRequestBodyless): PromiseLike<TResult | null> {
         return this.service.do(req.query as any);
     }
 }
@@ -62,7 +62,7 @@ export abstract class BaseCommandApplication<TRequest, TResult>
         super(notifications, requestInfo);
     }
 
-    procceed(req: IRequest<TRequest>): PromiseLike<TResult | null> {
+    proceed(req: IRequest<TRequest>): PromiseLike<TResult | null> {
         return this.service.do(req.data);
     }
 }

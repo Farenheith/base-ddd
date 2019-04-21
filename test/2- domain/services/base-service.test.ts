@@ -6,7 +6,7 @@ import { INotificationService } from "../../../src/interfaces/2 - domain/service
 import * as joi from "joi";
 
 class Service extends BaseService<any, any> {
-    procceed(data: any): PromiseLike<any> {
+    proceed(data: any): PromiseLike<any> {
         throw new Error("Method not implemented.");
     }
     getJoi(): { [x: string]: import("joi").Schema; } {
@@ -43,7 +43,7 @@ describe("BaseService", () => {
         spyOn(Static, "get").and.returnValue("JOI");
         const target = new Service("TESTE", {} as any, {} as any);
         spyOn(target, "validate").and.returnValue(true);
-        spyOn(target, "procceed").and.returnValue(Promise.resolve("EXPECTED_RESULT" as any));
+        spyOn(target, "proceed").and.returnValue(Promise.resolve("EXPECTED_RESULT" as any));
         //Act
         const result = await target.do("VALUE");
         //Assert

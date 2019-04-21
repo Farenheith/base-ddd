@@ -8,7 +8,7 @@ import { RequestInfoService } from "../../src/implementation/2 - domain/services
 import { IBaseService } from "../../src/interfaces/2 - domain/services/base-service.interface";
 
 class Command extends BaseCommandApplicationBase<any> {
-    procceed(req: IRequestBodyless): PromiseLike<any> {
+    proceed(req: IRequestBodyless): PromiseLike<any> {
         throw new Error("Method not implemented.");
     }
 }
@@ -23,7 +23,7 @@ describe("BaseCommandApplicationBase", () => {
         const target = new Command(notif, "REQUEST" as any);
         spyOn(https, "badRequest").and.returnValue("EXPECTED_RESULT" as any);
         spyOn(target, "prepareRequestInfo");
-        spyOn(target, "procceed").and.returnValue(Promise.resolve("PROCCEED"));
+        spyOn(target, "proceed").and.returnValue(Promise.resolve("PROCEED"));
 
         //act
         const result = await target.do("BODY" as any);
@@ -31,7 +31,7 @@ describe("BaseCommandApplicationBase", () => {
         //assert
         expect(result).toBe("EXPECTED_RESULT" as any);
         expect(target.prepareRequestInfo).toHaveBeenCalledWith("BODY");
-        expect(target.procceed).toHaveBeenCalledWith("BODY");
+        expect(target.proceed).toHaveBeenCalledWith("BODY");
         expect(notif.hasNotification).toHaveBeenCalledTimes(1);
         expect(notif.getNotifications).toHaveBeenCalledTimes(1);
         expect(https.badRequest).toHaveBeenCalledWith("EXPECTED_NOTIFICATIONS");
@@ -45,7 +45,7 @@ describe("BaseCommandApplicationBase", () => {
         const target = new Command(notif, "REQUEST" as any);
         spyOn(https, "ok").and.returnValue("EXPECTED_RESULT" as any);
         spyOn(target, "prepareRequestInfo");
-        spyOn(target, "procceed").and.returnValue(Promise.resolve("PROCCEED"));
+        spyOn(target, "proceed").and.returnValue(Promise.resolve("PROCEED"));
 
         //act
         const result = await target.do("BODY" as any);
@@ -53,9 +53,9 @@ describe("BaseCommandApplicationBase", () => {
         //assert
         expect(result).toBe("EXPECTED_RESULT" as any);
         expect(target.prepareRequestInfo).toHaveBeenCalledWith("BODY");
-        expect(target.procceed).toHaveBeenCalledWith("BODY");
+        expect(target.proceed).toHaveBeenCalledWith("BODY");
         expect(notif.hasNotification).toHaveBeenCalledTimes(1);
-        expect(https.ok).toHaveBeenCalledWith("PROCCEED");
+        expect(https.ok).toHaveBeenCalledWith("PROCEED");
     });
 
     it("success: ok", () => {
@@ -88,7 +88,7 @@ describe("BaseCommandApplicationBase", () => {
 class Command2 extends BaseCommandBodylessApplication<any, any> { }
 
 describe("BaseCommandBodylessApplication", () => {
-    it("procceed: ok", async () => {
+    it("proceed: ok", async () => {
         //Arrange
         const service = jasmine.createSpyObj<IBaseService<any, any>>("service", {
             do: Promise.resolve("EXPECTED_RESULT")
@@ -96,7 +96,7 @@ describe("BaseCommandBodylessApplication", () => {
         const target = new Command2({} as any, {} as any, service);
 
         //Act
-        const result = await target.procceed({ query: "QUERY" } as any);
+        const result = await target.proceed({ query: "QUERY" } as any);
 
         //Assert
         expect(result).toBe("EXPECTED_RESULT" as any);
@@ -107,7 +107,7 @@ describe("BaseCommandBodylessApplication", () => {
 class Command3 extends BaseCommandApplication<any, any> { }
 
 describe("BaseCommandApplication", () => {
-    it("procceed: ok", async () => {
+    it("proceed: ok", async () => {
         //Arrange
         const service = jasmine.createSpyObj<IBaseService<any, any>>("service", {
             do: Promise.resolve("EXPECTED_RESULT")
@@ -115,7 +115,7 @@ describe("BaseCommandApplication", () => {
         const target = new Command3({} as any, {} as any, service);
 
         //Act
-        const result = await target.procceed({ data: "DATA" } as any);
+        const result = await target.proceed({ data: "DATA" } as any);
 
         //Assert
         expect(result).toBe("EXPECTED_RESULT" as any);

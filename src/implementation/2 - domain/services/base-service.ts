@@ -18,13 +18,13 @@ export abstract class BaseService<TData, TResponse> implements IBaseService<TDat
 
     do(data: TData): PromiseLike<TResponse | null> {
         if (this.validate(data, this.schema)) {
-            return this.procceed(data);
+            return this.proceed(data);
         }
 
         return Promise.resolve(null);
     }
 
-    abstract procceed(data: TData): PromiseLike<TResponse>;
+    abstract proceed(data: TData): PromiseLike<TResponse>;
 
     validate(value: TData, schema: { [key in keyof TData]: joi.Schema  }): boolean {
         const validation = joi.validate(value, schema, {

@@ -21,7 +21,7 @@ let BaseService = class BaseService {
     }
     do(data) {
         if (this.validate(data, this.schema)) {
-            return this.procceed(data);
+            return this.proceed(data);
         }
         return Promise.resolve(null);
     }

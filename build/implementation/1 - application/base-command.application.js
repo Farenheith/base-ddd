@@ -19,7 +19,7 @@ let BaseCommandApplicationBase = class BaseCommandApplicationBase {
     }
     do(req) {
         this.prepareRequestInfo(req);
-        return this.procceed(req).then(x => {
+        return this.proceed(req).then(x => {
             if (this.notifications.hasNotification()) {
                 return request_formatter_1.badRequest(this.notifications.getNotifications());
             }
@@ -47,7 +47,7 @@ class BaseCommandBodylessApplication extends BaseCommandApplicationBase {
         super(notifications, requestInfo);
         this.service = service;
     }
-    procceed(req) {
+    proceed(req) {
         return this.service.do(req.query);
     }
 }
@@ -57,7 +57,7 @@ class BaseCommandApplication extends BaseCommandApplicationBase {
         super(notifications, requestInfo);
         this.service = service;
     }
-    procceed(req) {
+    proceed(req) {
         return this.service.do(req.data);
     }
 }
