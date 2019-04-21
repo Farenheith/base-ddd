@@ -52,5 +52,5 @@ export abstract class BaseService<TData, TResponse> implements IBaseService<TDat
         return joi;
     }
 
-    abstract getJoi(): { [key in keyof TData]: joi.Schema  };
+    abstract getJoi(): any;
 }
