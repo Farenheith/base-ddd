@@ -15,7 +15,7 @@
   "name": "base-ddd",
   "description": "Base project for creation of DDD + Command driven projects using typescript and inversify, aimed to be the base of an api node project.",
   "version": "0.0.1",
-  "main": "index.js",
+  "main": "build/index.js",
   "devDependencies": {
     "@types/jasmine": "^3.3.12",
     "jasmine": "^3.4.0",
