@@ -11,7 +11,7 @@ export declare abstract class BaseService<TData, TResponse> implements IBaseServ
     };
     constructor(entityName: string, notifications: INotificationService, settings: IRequestInfo);
     do(data: TData): PromiseLike<TResponse | null>;
-    abstract proceed(data: TData): PromiseLike<TResponse>;
+    abstract proceed(data: TData): PromiseLike<TResponse | null>;
     validate(value: TData, schema: {
         [key in keyof TData]: joi.Schema;
     }): boolean;
