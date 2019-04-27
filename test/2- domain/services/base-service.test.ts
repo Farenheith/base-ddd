@@ -108,13 +108,13 @@ describe("BaseService", () => {
             language: "LANGUAGE"
         } as any);
         spyOn(target, "message");
-        spyOn(target, "hasNotification").and.returnValue("EXPECTED_RESULT" as any);
+        spyOn(target, "hasNotification").and.returnValue("hghjgjhg" as any);
         //Act
         const result = target.validate("VALUE", "JOI" as any);
         
         //Assert
         expect(target.schema).toBe("JOI" as any);
-        expect(result).toBe("EXPECTED_RESULT" as any);
+        expect(result).toBeFalsy();
         expect(joi.validate).toHaveBeenCalledWith("VALUE", "JOI", {
             language: "LANGUAGE"
         });
