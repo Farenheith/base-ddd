@@ -36,7 +36,7 @@ let BaseService = class BaseService {
                 });
             }
         }
-        return this.hasNotification();
+        return !this.hasNotification();
     }
     message(message, code, field) {
         this.notifications.add(message, code, field);
