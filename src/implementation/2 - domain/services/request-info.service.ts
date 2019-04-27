@@ -2,11 +2,12 @@ import { IRequestInfo } from "../../../interfaces/2 - domain/models/request-info
 import { ILanguageService } from "../../../interfaces/2 - domain/services/language-service.interface";
 import { LanguageRootOptions } from "joi";
 import { IRequestBodyless } from "../../../interfaces/2 - domain/models/request.interface";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
+import { BASE_TYPES } from "../../../base-types";
 
 @injectable()
 export class RequestInfoService implements IRequestInfo {
-    constructor(readonly languageService: ILanguageService) { }
+    constructor(@inject(BASE_TYPES.domainServices.ILanguageService) readonly languageService: ILanguageService) { }
 
     language: LanguageRootOptions | undefined;
 
