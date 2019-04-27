@@ -8,7 +8,8 @@ const scoped_cache_service_1 = require("./implementation/2 - domain/services/sco
 const request_formatter_1 = require("./implementation/helpers/request-formatter");
 class BaseAppContainer extends inversify_1.Container {
     constructor(requestInfoType, settings) {
-        super({ defaultScope: inversify_1.BindingScopeEnum.Request });
+        super({ defaultScope: inversify_1.BindingScopeEnum.Request,
+            skipBaseClassChecks: true });
         this.requestInfoType = requestInfoType;
         this.settings = settings;
         this.register();
