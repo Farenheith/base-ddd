@@ -9,17 +9,34 @@ import { LanguageService } from "../src/implementation/2 - domain/services/langu
 import { Container } from "inversify";
 import { ICommandBodyless } from "../src/interfaces/1 - application/command-interface";
 import { ILogger } from "../src/interfaces/2 - domain/services/logger.interface";
+import { symbol } from "joi";
 
 class TestContainer extends BaseAppContainer<any> {
     registerDomainServices(): void {
-        throw new Error("Method not implemented.");
     }
     registerApplications(): void {
-        throw new Error("Method not implemented.");
+    }
+}
+
+function recursive(obj: any, container: TestContainer) {
+    for(const str in obj) {
+        const item = BASE_TYPES[str];
+        if (item instanceof symbol) {
+            container.get<any>(item as any);
+        } else {
+            recursive(item, container);
+        }
     }
 }
 
 describe("BaseAppContainer", () => {
+    it("is all injections ok", () => {
+        const settings:any = "SETTINGS";
+        const container = new TestContainer(RequestInfoService, settings);
+
+        recursive(BASE_TYPES, container);
+    });
+
     it("constructor: ok", () => {
         //Arrange
         spyOn(TestContainer.prototype, "registerDomainServices");
