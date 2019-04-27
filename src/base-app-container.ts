@@ -11,7 +11,6 @@ import { IScopedCache } from "./interfaces/2 - domain/services/scoped-cache.inte
 import { ScopedCacheService } from "./implementation/2 - domain/services/scoped-cache.service";
 import { IRequestBodyless } from "./interfaces/2 - domain/models/request.interface";
 import { ICommandBodyless } from "./interfaces/1 - application/command-interface";
-import { IResponse } from "./interfaces/2 - domain/models/response.interface";
 import { ILogger } from "./interfaces/2 - domain/services/logger.interface";
 import { serviceUnavailable } from "./implementation/helpers/request-formatter";
 
@@ -19,7 +18,8 @@ export abstract class BaseAppContainer<TSettings extends ISettings> extends Cont
 
     constructor(readonly requestInfoType: typeof RequestInfoService,
             readonly settings: TSettings) {
-        super({ defaultScope: BindingScopeEnum.Request });
+        super({ defaultScope: BindingScopeEnum.Request,
+                skipBaseClassChecks: true });
         this.register();
     }
 
