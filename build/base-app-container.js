@@ -6,6 +6,7 @@ const language_service_1 = require("./implementation/2 - domain/services/languag
 const notification_service_1 = require("./implementation/2 - domain/services/notification.service");
 const scoped_cache_service_1 = require("./implementation/2 - domain/services/scoped-cache.service");
 const request_formatter_1 = require("./implementation/helpers/request-formatter");
+require("reflect-metadata");
 class BaseAppContainer extends inversify_1.Container {
     constructor(requestInfoType, settings) {
         super({ defaultScope: inversify_1.BindingScopeEnum.Request,

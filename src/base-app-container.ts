@@ -13,6 +13,7 @@ import { IRequestBodyless } from "./interfaces/2 - domain/models/request.interfa
 import { ICommandBodyless } from "./interfaces/1 - application/command-interface";
 import { ILogger } from "./interfaces/2 - domain/services/logger.interface";
 import { serviceUnavailable } from "./implementation/helpers/request-formatter";
+import "reflect-metadata";
 
 export abstract class BaseAppContainer<TSettings extends ISettings> extends Container {
 
