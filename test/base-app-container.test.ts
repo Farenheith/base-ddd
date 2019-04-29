@@ -10,6 +10,7 @@ import { Container } from "inversify";
 import { ICommandBodyless } from "../src/interfaces/1 - application/command-interface";
 import { ILogger } from "../src/interfaces/2 - domain/services/logger.interface";
 import { symbol } from "joi";
+import { Logger } from "../src/implementation/2 - domain/services/logger-service";
 
 class TestContainer extends BaseAppContainer<any> {
     registerDomainServices(): void {
@@ -58,17 +59,18 @@ describe("BaseAppContainer", () => {
             return mapper;
         });
         //Act
-        const target = new TestContainer(RequestInfoService, "SETTINGS");
+        new TestContainer(RequestInfoService, "SETTINGS");
 
         //Assert
         expect(TestContainer.prototype.registerDomainServices).toHaveBeenCalledTimes(1);
         expect(TestContainer.prototype.registerApplications).toHaveBeenCalledTimes(1);
-        expect(TestContainer.prototype.bind).toHaveBeenCalledTimes(5);
+        expect(TestContainer.prototype.bind).toHaveBeenCalledTimes(6);
         expect(mapping[BASE_TYPES.domainModels.IRequestInfo.toString()]).toBe(RequestInfoService);
         expect(mapping[BASE_TYPES.domainModels.ISettings.toString()]).toBe("SETTINGS");
         expect(mapping[BASE_TYPES.domainServices.ILanguageService.toString()]).toBe(LanguageService);
         expect(mapping[BASE_TYPES.domainServices.INotificationService.toString()]).toBe(NotificationService);
         expect(mapping[BASE_TYPES.domainServices.IScopedCacheService.toString()]).toBe(ScopedCacheService);
+        expect(mapping[BASE_TYPES.domainServices.ILogger.toString()]).toBe(Logger);
     });
 
     it("adapter: redirect", async () => {
