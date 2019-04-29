@@ -14,6 +14,7 @@ import { ICommandBodyless } from "./interfaces/1 - application/command-interface
 import { ILogger } from "./interfaces/2 - domain/services/logger.interface";
 import { serviceUnavailable } from "./implementation/helpers/request-formatter";
 import "reflect-metadata";
+import { Logger } from "./implementation/2 - domain/services/logger-service";
 
 export abstract class BaseAppContainer<TSettings extends ISettings> extends Container {
 
@@ -40,6 +41,11 @@ export abstract class BaseAppContainer<TSettings extends ISettings> extends Cont
         this.bind<ILanguageService>(BASE_TYPES.domainServices.ILanguageService).to(LanguageService);
         this.bind<INotificationService>(BASE_TYPES.domainServices.INotificationService).to(NotificationService);
         this.bind<IScopedCache>(BASE_TYPES.domainServices.IScopedCacheService).to(ScopedCacheService);
+        this.registerLogger();
+    }
+
+    registerLogger() {
+        this.bind<ILogger>(BASE_TYPES.domainServices.ILogger).to(Logger);
     }
 
     abstract registerDomainServices(): void;
