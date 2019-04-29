@@ -1,4 +1,7 @@
 export declare const BASE_TYPES: {
+    applications: {
+        INotFoundApplication: symbol;
+    };
     domainModels: {
         ISettings: symbol;
         IRequestInfo: symbol;

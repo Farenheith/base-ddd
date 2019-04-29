@@ -11,6 +11,8 @@ import { ICommandBodyless } from "../src/interfaces/1 - application/command-inte
 import { ILogger } from "../src/interfaces/2 - domain/services/logger.interface";
 import { symbol } from "joi";
 import { Logger } from "../src/implementation/2 - domain/services/logger-service";
+import { NotFoundApplication } from "../src/implementation/1 - application/not-found.application";
+import { HttpMethodEnum } from "../src/implementation/2 - domain/enums/http-method.enum";
 
 class TestContainer extends BaseAppContainer<any> {
     registerDomainServices(): void {
@@ -31,7 +33,7 @@ function recursive(obj: any, container: TestContainer) {
 }
 
 describe("BaseAppContainer", () => {
-    it("is all injections ok", () => {
+    it("are all injections ok", () => {
         const settings:any = "SETTINGS";
         const container = new TestContainer(RequestInfoService, settings);
 
@@ -64,20 +66,21 @@ describe("BaseAppContainer", () => {
         //Assert
         expect(TestContainer.prototype.registerDomainServices).toHaveBeenCalledTimes(1);
         expect(TestContainer.prototype.registerApplications).toHaveBeenCalledTimes(1);
-        expect(TestContainer.prototype.bind).toHaveBeenCalledTimes(6);
+        expect(TestContainer.prototype.bind).toHaveBeenCalledTimes(7);
         expect(mapping[BASE_TYPES.domainModels.IRequestInfo.toString()]).toBe(RequestInfoService);
         expect(mapping[BASE_TYPES.domainModels.ISettings.toString()]).toBe("SETTINGS");
         expect(mapping[BASE_TYPES.domainServices.ILanguageService.toString()]).toBe(LanguageService);
         expect(mapping[BASE_TYPES.domainServices.INotificationService.toString()]).toBe(NotificationService);
         expect(mapping[BASE_TYPES.domainServices.IScopedCacheService.toString()]).toBe(ScopedCacheService);
         expect(mapping[BASE_TYPES.domainServices.ILogger.toString()]).toBe(Logger);
+        expect(mapping[BASE_TYPES.applications.INotFoundApplication.toString()]).toBe(NotFoundApplication);
     });
 
     it("adapter: redirect", async () => {
         //Arrange
         spyOn(TestContainer.prototype, "register");
         const target = new TestContainer({} as any, {} as any);
-        const symbol = Symbol.for("teste");
+        const symbol = Symbol.for("TEST");
         const spyApplication = jasmine.createSpyObj<ICommandBodyless<any>>("application", {
             do: Promise.resolve({
                 statusCode: 300,
@@ -118,7 +121,7 @@ describe("BaseAppContainer", () => {
         //Arrange
         spyOn(TestContainer.prototype, "register");
         const target = new TestContainer({} as any, {} as any);
-        const symbol = Symbol.for("teste");
+        const symbol = Symbol.for("TEST");
         const spyApplication = jasmine.createSpyObj<ICommandBodyless<any>>("application", {
             do: Promise.resolve({
                 statusCode: 202,
@@ -164,7 +167,7 @@ describe("BaseAppContainer", () => {
         //Arrange
         spyOn(TestContainer.prototype, "register");
         const target = new TestContainer({} as any, {} as any);
-        const symbol = Symbol.for("teste");
+        const symbol = Symbol.for("TEST");
         const spyApplication = {
             do() { }
         };
@@ -207,5 +210,122 @@ describe("BaseAppContainer", () => {
                 }
             ]
         });
+    });
+
+    it("registerCommand: ok", () => {
+        //Arrange
+        spyOn(TestContainer.prototype, "register");
+        const target = new TestContainer(RequestInfoService, {} as any);
+        const symbol = Symbol.for("TEST");
+        //Act
+        target.registerCommand("TEST" as any, "ROTA" as any, symbol);
+
+        //Assert
+        expect(target.routes).toEqual({
+            "/rota/": {
+                TEST: symbol
+            }
+        });
+        expect(target.register).toHaveBeenCalledTimes(1);
+    });
+
+    it("registerCommand: ok (with /)", () => {
+        //Arrange
+        spyOn(TestContainer.prototype, "register");
+        const target = new TestContainer(RequestInfoService, {} as any);
+        const symbol = Symbol.for("TEST");
+        //Act
+        target.registerCommand("TEST" as any, "/ROTA/" as any, symbol);
+
+        //Assert
+        expect(target.routes).toEqual({
+            "/rota/": {
+                TEST: symbol
+            }
+        });
+        expect(target.register).toHaveBeenCalledTimes(1);
+    });
+
+    it("processCommand: ok", () => {
+        //Arrange
+        spyOn(TestContainer.prototype, "register");
+        const target = new TestContainer(RequestInfoService, {} as any);
+        spyOn(target, "adapter");
+        const symbol = Symbol.for("TEST");
+        target.routes = {
+            "/test/subtest": {
+                [HttpMethodEnum.GET]: symbol
+            },
+            "/test/": {
+                [HttpMethodEnum.GET]: symbol
+            }
+        };
+        const request: any = {
+            path: "TEST",
+            method: "GET"
+        }
+        const response: any = "RESPONSE"
+        //Act
+        target.processCommand(request, response);
+
+        //Assert
+        expect(target.register).toHaveBeenCalledTimes(1);
+        expect(target.adapter).toHaveBeenCalledTimes(1);
+        expect(target.adapter).toHaveBeenCalledWith(symbol, request, response);
+    });
+
+    it("processCommand: ok (with queryString)", () => {
+        //Arrange
+        spyOn(TestContainer.prototype, "register");
+        const target = new TestContainer(RequestInfoService, {} as any);
+        spyOn(target, "adapter");
+        const symbol = Symbol.for("TEST");
+        target.routes = {
+            "/test/subtest": {
+                [HttpMethodEnum.GET]: symbol
+            },
+            "/test/": {
+                [HttpMethodEnum.GET]: symbol
+            }
+        };
+        const request: any = {
+            path: "TEST?teste=1",
+            method: "GET"
+        }
+        const response: any = "RESPONSE"
+        //Act
+        target.processCommand(request, response);
+
+        //Assert
+        expect(target.register).toHaveBeenCalledTimes(1);
+        expect(target.adapter).toHaveBeenCalledTimes(1);
+        expect(target.adapter).toHaveBeenCalledWith(symbol, request, response);
+    });
+
+    it("processCommand: not found", () => {
+        //Arrange
+        spyOn(TestContainer.prototype, "register");
+        const target = new TestContainer(RequestInfoService, {} as any);
+        spyOn(target, "adapter");
+        const symbol = Symbol.for("TEST");
+        target.routes = {
+            "/test/subtest": {
+                [HttpMethodEnum.GET]: symbol
+            },
+            "/test/": {
+                [HttpMethodEnum.GET]: symbol
+            }
+        };
+        const request: any = {
+            path: "/TEST/"
+        }
+        const response: any = "RESPONSE"
+        //Act
+        target.processCommand(request, response);
+
+        //Assert
+        expect(target.register).toHaveBeenCalledTimes(1);
+        expect(target.adapter).toHaveBeenCalledTimes(1);
+        expect(target.adapter).toHaveBeenCalledWith(BASE_TYPES.applications.INotFoundApplication, request, response);
     });
 });
