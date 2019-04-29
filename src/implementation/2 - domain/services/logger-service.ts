@@ -1,5 +1,7 @@
 import { ILogger } from "../../../interfaces/2 - domain/services/logger.interface";
+import { injectable } from "inversify";
 
+@injectable()
 export class Logger implements ILogger {
     info(message: string): void {
         console.log(`[INFO][${new Date()}] ${message}`);
