@@ -13,6 +13,15 @@ function badRequest(errors) {
     return { statusCode: http_status_codes_1.BAD_REQUEST, errors };
 }
 exports.badRequest = badRequest;
+function notFound() {
+    return { statusCode: http_status_codes_1.NOT_FOUND, errors: [
+            {
+                code: "notFound",
+                message: "Não encontrado"
+            }
+        ] };
+}
+exports.notFound = notFound;
 function serviceUnavailable() {
     return { statusCode: http_status_codes_1.SERVICE_UNAVAILABLE, errors: [
             {

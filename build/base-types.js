@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BASE_TYPES = {
+    applications: {
+        INotFoundApplication: Symbol.for("INotFoundApplication")
+    },
     domainModels: {
         ISettings: Symbol.for("ISettings"),
         IRequestInfo: Symbol.for("IRequestInfo")

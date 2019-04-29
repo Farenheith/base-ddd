@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Container, BindingScopeEnum } from "inversify";
 import { ILanguageService } from "./interfaces/2 - domain/services/language-service.interface";
 import { BASE_TYPES } from "./base-types";
@@ -9,14 +10,17 @@ import { NotificationService } from "./implementation/2 - domain/services/notifi
 import { ISettings } from "./interfaces/2 - domain/models/settings.interface";
 import { IScopedCache } from "./interfaces/2 - domain/services/scoped-cache.interface";
 import { ScopedCacheService } from "./implementation/2 - domain/services/scoped-cache.service";
-import { IRequestBodyless } from "./interfaces/2 - domain/models/request.interface";
-import { ICommandBodyless } from "./interfaces/1 - application/command-interface";
+import { IRequestBodyless, IRequest } from "./interfaces/2 - domain/models/request.interface";
+import { ICommandBodyless, ICommand } from "./interfaces/1 - application/command-interface";
 import { ILogger } from "./interfaces/2 - domain/services/logger.interface";
 import { serviceUnavailable } from "./implementation/helpers/request-formatter";
-import "reflect-metadata";
 import { Logger } from "./implementation/2 - domain/services/logger-service";
+import { INotFoundApplication } from "./interfaces/1 - application/not-found-application.interface";
+import { NotFoundApplication } from "./implementation/1 - application/not-found.application";
+import { HttpMethodEnum } from "./implementation/2 - domain/enums/http-method.enum";
 
 export abstract class BaseAppContainer<TSettings extends ISettings> extends Container {
+    routes: { [route: string]: {[verb: string]: symbol } }  = { };
 
     constructor(readonly requestInfoType: typeof RequestInfoService,
             readonly settings: TSettings) {
@@ -42,6 +46,9 @@ export abstract class BaseAppContainer<TSettings extends ISettings> extends Cont
         this.bind<INotificationService>(BASE_TYPES.domainServices.INotificationService).to(NotificationService);
         this.bind<IScopedCache>(BASE_TYPES.domainServices.IScopedCacheService).to(ScopedCacheService);
         this.registerLogger();
+
+        //applications
+        this.bind<INotFoundApplication>(BASE_TYPES.applications.INotFoundApplication).to(NotFoundApplication);
     }
 
     registerLogger() {
@@ -52,8 +59,7 @@ export abstract class BaseAppContainer<TSettings extends ISettings> extends Cont
 
     abstract registerApplications(): void;
 
-    async adapter(
-            symbol: symbol, req: IRequestBodyless, res: any) {
+    async adapter(symbol: symbol, req: IRequestBodyless, res: any) {
         const child = this.createChild();
         const application = child.get(symbol) as ICommandBodyless<any>;
         const logger = child.get<ILogger>(BASE_TYPES.domainServices.ILogger);
@@ -73,6 +79,42 @@ export abstract class BaseAppContainer<TSettings extends ISettings> extends Cont
             const result = serviceUnavailable();
             res.status(result.statusCode);
             res.send(result);
+        }
+    }   
+
+    registerCommand(verb: HttpMethodEnum, route: string,
+            command: symbol) {
+        let routeTreated = route.startsWith('/') ? route : `/${route}`;
+        if (!routeTreated.endsWith('/')) {
+            routeTreated = `${routeTreated}/`;
+        }
+        routeTreated = routeTreated.toLowerCase();
+        this.routes[routeTreated] = { [verb]: command };
+    }
+
+    processCommand(req: IRequestBodyless | IRequest<any>, res: Response) {
+        const queryStringStart = req.path.indexOf("?");
+        let path = queryStringStart < 0 ? req.path : req.path.substring(0, queryStringStart);
+        if (!path.startsWith('/')) {
+            path = `/${path}`;
+        }
+        if (!path.endsWith('/')) {
+            path = `${path}/`;
+        }
+        path = path.toLowerCase();
+        let command: symbol | undefined = undefined; 
+        do {
+            const route = this.routes[path];
+            if (route) {
+                command = route[req.method];
+            }
+            path = path.substring(0, path.lastIndexOf('/', path.length - 2) + 1);
+        } while (!command && path.length > 1);
+
+        if (command) {
+            this.adapter(command, req, res);
+        } else {
+            this.adapter(BASE_TYPES.applications.INotFoundApplication, req, res);
         }
     }
 }

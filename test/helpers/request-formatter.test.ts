@@ -30,6 +30,20 @@ describe("request-formatter", () => {
         });
     });
 
+    it("notFound: ok", () => {
+        const result = RequestFormatter.notFound();
+
+        expect(result).toEqual({
+            statusCode: 404,
+            errors: [
+                {
+                    code: "notFound",
+                    message: "Não encontrado"
+                }
+            ]
+        });
+    });
+
     it("serviceUnavailable: ok", () => {
         const result = RequestFormatter.serviceUnavailable();
 
