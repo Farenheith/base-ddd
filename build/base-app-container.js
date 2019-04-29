@@ -7,6 +7,7 @@ const notification_service_1 = require("./implementation/2 - domain/services/not
 const scoped_cache_service_1 = require("./implementation/2 - domain/services/scoped-cache.service");
 const request_formatter_1 = require("./implementation/helpers/request-formatter");
 require("reflect-metadata");
+const logger_service_1 = require("./implementation/2 - domain/services/logger-service");
 class BaseAppContainer extends inversify_1.Container {
     constructor(requestInfoType, settings) {
         super({ defaultScope: inversify_1.BindingScopeEnum.Request,
@@ -28,6 +29,10 @@ class BaseAppContainer extends inversify_1.Container {
         this.bind(base_types_1.BASE_TYPES.domainServices.ILanguageService).to(language_service_1.LanguageService);
         this.bind(base_types_1.BASE_TYPES.domainServices.INotificationService).to(notification_service_1.NotificationService);
         this.bind(base_types_1.BASE_TYPES.domainServices.IScopedCacheService).to(scoped_cache_service_1.ScopedCacheService);
+        this.registerLogger();
+    }
+    registerLogger() {
+        this.bind(base_types_1.BASE_TYPES.domainServices.ILogger).to(logger_service_1.Logger);
     }
     async adapter(symbol, req, res) {
         const child = this.createChild();

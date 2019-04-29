@@ -9,6 +9,7 @@ export declare abstract class BaseAppContainer<TSettings extends ISettings> exte
     constructor(requestInfoType: typeof RequestInfoService, settings: TSettings);
     register(): void;
     registerDomain(): void;
+    registerLogger(): void;
     abstract registerDomainServices(): void;
     abstract registerApplications(): void;
     adapter(symbol: symbol, req: IRequestBodyless, res: any): Promise<void>;
