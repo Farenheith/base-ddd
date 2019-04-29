@@ -70,10 +70,15 @@ class BaseAppContainer extends inversify_1.Container {
         this.routes[routeTreated] = { [verb]: command };
     }
     processCommand(req, res) {
-        let path = req.path.substring(0, req.path.indexOf("?") || req.path.length);
+        const queryStringStart = req.path.indexOf("?");
+        let path = queryStringStart < 0 ? req.path : req.path.substring(0, queryStringStart);
+        if (!path.startsWith('/')) {
+            path = `/${path}`;
+        }
         if (!path.endsWith('/')) {
             path = `${path}/`;
         }
+        path = path.toLowerCase();
         let command = undefined;
         do {
             const route = this.routes[path];
