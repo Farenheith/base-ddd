@@ -8,6 +8,8 @@ export * from "./implementation/2 - domain/services/request-info.service";
 export * from "./implementation/2 - domain/services/scoped-cache.service";
 export * from "./implementation/2 - domain/services/static-service";
 
+export * from "./implementation/2 - domain/enums/http-method.enum";
+
 export * from "./interfaces/1 - application/command-interface";
 export * from "./interfaces/2 - domain/models/request-info.interface";
 export * from "./interfaces/2 - domain/models/settings.interface";
